@@ -1,7 +1,5 @@
 package com.github.trang.statemachine;
 
-import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
-import com.github.trang.statemachine.model.enums.Events;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +10,7 @@ import org.springframework.statemachine.StateMachine;
 public class StateMachineApplication implements CommandLineRunner {
 
     @Autowired
-    private StateMachine<EnumHousedelStatus, Events> stateMachine;
+    private StateMachine<String, String> stateMachine;
 
     public static void main(String[] args) {
         SpringApplication.run(StateMachineApplication.class, args);

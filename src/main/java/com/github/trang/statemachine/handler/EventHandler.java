@@ -5,6 +5,7 @@ import com.github.trang.statemachine.model.domain.Housedel;
 import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
 import com.github.trang.statemachine.model.enums.Events;
 import com.github.trang.statemachine.service.HousedelService;
+import com.google.common.primitives.Ints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.ExtendedState;
@@ -24,15 +25,25 @@ public class EventHandler {
     private HousedelService housedelService;
 
     @StatesOnTransition(source = EnumHousedelStatus.VALID, target = EnumHousedelStatus.DRAFT_INTENTION)
-    public void toA(@EventHeaders Map<String, Object> headers,
+    public void change(@EventHeaders Map<String, Object> headers,
                     ExtendedState extendedState,
-                    StateMachine<EnumHousedelStatus, Events> stateMachine,
+                    StateMachine<String, String> stateMachine,
                     Message<Events> message,
                     Exception e) {
         Long housedelCode = (Long) headers.get("housedelCode");
         Housedel param = Housedel.builder()
                 .housedelCode(housedelCode)
-                .delStatus(EnumHousedelStatus.DRAFT_INTENTION.getValue())
+                .delStatus(Ints.tryParse(EnumHousedelStatus.DRAFT_INTENTION.getValue()))
+                .build();
+        housedelService.update(param);
+    }
+
+    @StatesOnTransition(target = EnumHousedelStatus.INVALID)
+    public void end(@EventHeaders Map<String, Object> headers) {
+        Long housedelCode = (Long) headers.get("housedelCode");
+        Housedel param = Housedel.builder()
+                .housedelCode(housedelCode)
+                .delStatus(Ints.tryParse(EnumHousedelStatus.INVALID.getValue()))
                 .build();
         housedelService.update(param);
     }
