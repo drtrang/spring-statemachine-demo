@@ -1,0 +1,51 @@
+server:
+  port: 9500
+
+logging:
+  level:
+    root: info
+    org.mybatis: debug
+    org.springframework: warn
+    org.springframework.jdbc: debug
+    com.github.trang: debug
+
+debug: false
+
+spring:
+  config:
+    location: classpath:/config/
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://172.30.11.240:3306/house_huabei?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: 123456
+  transaction:
+    rollback-on-commit-failure: true
+  aop:
+    proxy-target-class: true
+
+mybatis:
+  type-aliases-package: com.github.trang.statemachine.domain
+  mapper-locations: classpath:mappers/*.xml
+  configuration:
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+mapper:
+  mappers:
+    - com.github.trang.statemachine.util.BaseMapper
+  not-empty: true
+  identity: MYSQL
+
+pagehelper:
+  helper-dialect: mysql
+  offset-as-page-num: true
+  row-bounds-with-count: false
+  page-size-zero: false
+  reasonable: false
+  support-methods-arguments: false
+  auto-runtime-dialect: false
