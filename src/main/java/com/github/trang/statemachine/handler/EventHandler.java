@@ -1,11 +1,8 @@
 package com.github.trang.statemachine.handler;
 
 import com.github.trang.statemachine.annotation.StatesOnTransition;
-import com.github.trang.statemachine.model.domain.Housedel;
-import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
-import com.github.trang.statemachine.model.enums.Events;
-import com.github.trang.statemachine.service.HousedelService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.github.trang.statemachine.config.StateMachineConfig.Events;
+import com.github.trang.statemachine.config.StateMachineConfig.States;
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateMachine;
@@ -20,21 +17,13 @@ import java.util.Map;
 @WithStateMachine
 public class EventHandler {
 
-    @Autowired
-    private HousedelService housedelService;
-
-    @StatesOnTransition(source = EnumHousedelStatus.VALID, target = EnumHousedelStatus.DRAFT_INTENTION)
-    public void toA(@EventHeaders Map<String, Object> headers,
+    @StatesOnTransition(source = States.S0, target = States.S1)
+    public void add(@EventHeaders Map<String, Object> headers,
                     ExtendedState extendedState,
-                    StateMachine<EnumHousedelStatus, Events> stateMachine,
+                    StateMachine<States, Events> stateMachine,
                     Message<Events> message,
                     Exception e) {
-        Long housedelCode = (Long) headers.get("housedelCode");
-        Housedel param = Housedel.builder()
-                .housedelCode(housedelCode)
-                .delStatus(EnumHousedelStatus.DRAFT_INTENTION.getValue())
-                .build();
-        housedelService.update(param);
+        System.out.println("处理 S0 -> S1 状态流转");
     }
 
 }

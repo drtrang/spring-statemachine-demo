@@ -1,7 +1,5 @@
 package com.github.trang.statemachine.config;
 
-import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
-import com.github.trang.statemachine.model.enums.Events;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,37 +25,43 @@ public class StateMachineConfig {
 
     @Configuration
     @EnableStateMachine
-    static class Config extends EnumStateMachineConfigurerAdapter<EnumHousedelStatus, Events> {
+    static class Config extends EnumStateMachineConfigurerAdapter<States, Events> {
 
         @Autowired
-        StateMachineListener<EnumHousedelStatus, Events> stateMachineListener;
+        StateMachineListener<States, Events> stateMachineListener;
 
         /**
          * 初始化状态机
          */
         @Override
-        public void configure(StateMachineStateConfigurer<EnumHousedelStatus, Events> config) throws Exception {
+        public void configure(StateMachineStateConfigurer<States, Events> config) throws Exception {
             config
                     .withStates()
-                    .initial(EnumHousedelStatus.VALID)
-                    .states(EnumSet.allOf(EnumHousedelStatus.class));
+                    .initial(States.S0)
+                    .states(EnumSet.allOf(States.class));
         }
 
         /**
          * 配置状态转换
          */
         @Override
-        public void configure(StateMachineTransitionConfigurer<EnumHousedelStatus, Events> transitions) throws Exception {
+        public void configure(StateMachineTransitionConfigurer<States, Events> transitions) throws Exception {
             transitions
-                    .withExternal().event(Events.意向金起草).source(EnumHousedelStatus.VALID).target(EnumHousedelStatus.DRAFT_INTENTION)
-                    .and()
-                    .withExternal().event(Events.意向金盖章).source(EnumHousedelStatus.DRAFT_INTENTION).target(EnumHousedelStatus.SEAL_INTENTION)
-                    .and()
-                    .withExternal().event(Events.意向金签订).source(EnumHousedelStatus.SEAL_INTENTION).target(EnumHousedelStatus.SIGN_INTENTION);
+                    .withExternal()
+                        .source(States.S0).target(States.S1).event(Events.E0_1)
+                        .and()
+                    .withExternal()
+                        .source(States.S1).target(States.S2).event(Events.E1_2)
+                        .and()
+                    .withExternal()
+                        .source(States.S1).target(States.S3).event(Events.E1_3)
+                        .and()
+                    .withExternal()
+                        .source(States.S2).target(States.S3).event(Events.E2_3);
         }
 
         @Override
-        public void configure(StateMachineConfigurationConfigurer<EnumHousedelStatus, Events> config) throws Exception {
+        public void configure(StateMachineConfigurationConfigurer<States, Events> config) throws Exception {
             config.withConfiguration()
                     .machineId("state-machine-test")
                     .autoStartup(true)
@@ -65,16 +69,24 @@ public class StateMachineConfig {
         }
 
         @Bean
-        public StateMachineListener<EnumHousedelStatus, Events> stateMachineListener() {
-            return new StateMachineListenerAdapter<EnumHousedelStatus, Events>() {
+        public StateMachineListener<States, Events> stateMachineListener() {
+            return new StateMachineListenerAdapter<States, Events>() {
                 @Override
-                public void stateChanged(State<EnumHousedelStatus, Events> from, State<EnumHousedelStatus, Events> to) {
+                public void stateChanged(State<States, Events> from, State<States, Events> to) {
                     Optional.ofNullable(from).ifPresent(
-                            (f) -> System.out.println("房源状态从 " + from.getId().getDesc() + " 流转到 " + to.getId().getDesc())
+                            (f) -> System.out.println("状态从 " + from.getId() + " 流转到 " + to.getId())
                     );
                 }
             };
         }
+    }
+
+    public enum Events {
+        E0_1, E1_2, E1_3, E2_3
+    }
+
+    public enum States {
+        S0, S1, S2, S3, S4, S5, S6, S7
     }
 
 }

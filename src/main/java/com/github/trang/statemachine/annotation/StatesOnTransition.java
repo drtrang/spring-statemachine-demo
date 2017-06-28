@@ -1,6 +1,6 @@
 package com.github.trang.statemachine.annotation;
 
-import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
+import com.github.trang.statemachine.config.StateMachineConfig.States;
 import org.springframework.statemachine.annotation.OnTransition;
 
 import java.lang.annotation.ElementType;
@@ -16,8 +16,7 @@ import java.lang.annotation.Target;
 @OnTransition
 public @interface StatesOnTransition {
 
-    EnumHousedelStatus[] source() default {};
+    States[] source() default {};
 
-    EnumHousedelStatus[] target() default {};
-
+    States[] target() default {};
 }
