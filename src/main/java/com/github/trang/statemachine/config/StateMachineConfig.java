@@ -1,14 +1,11 @@
 package com.github.trang.statemachine.config;
 
-import com.github.trang.statemachine.model.domain.Housedel;
 import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
 import com.github.trang.statemachine.model.enums.Events;
-import com.github.trang.statemachine.service.HousedelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.EnableStateMachine;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
@@ -18,7 +15,6 @@ import org.springframework.statemachine.config.builders.StateMachineTransitionCo
 import org.springframework.statemachine.listener.StateMachineListener;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.recipes.persist.PersistStateMachineHandler;
-import org.springframework.statemachine.recipes.persist.PersistStateMachineHandler.PersistStateChangeListener;
 import org.springframework.statemachine.state.State;
 
 import java.util.EnumSet;
@@ -47,8 +43,10 @@ public class StateMachineConfig {
             config
                     .withStates()
                     .initial(EnumHousedelStatus.VALID.getValue())
-                    .states(EnumSet.allOf(EnumHousedelStatus.class).stream().map(EnumHousedelStatus::name).collect(Collectors.toSet()))
-                    .end(EnumHousedelStatus.INVALID.getValue());
+                    .states(EnumSet.allOf(EnumHousedelStatus.class)
+                            .stream()
+                            .map(EnumHousedelStatus::name)
+                            .collect(Collectors.toSet()));
         }
 
         /**
@@ -61,9 +59,7 @@ public class StateMachineConfig {
                     .and()
                     .withExternal().event(Events.E8_9.name()).source(EnumHousedelStatus.DRAFT_INTENTION.getValue()).target(EnumHousedelStatus.SEAL_INTENTION.getValue())
                     .and()
-                    .withExternal().event(Events.E9_10.name()).source(EnumHousedelStatus.SEAL_INTENTION.getValue()).target(EnumHousedelStatus.SIGN_INTENTION.getValue())
-                    .and()
-                    .withExit().target(EnumHousedelStatus.INVALID.getValue());
+                    .withExternal().event(Events.E9_10.name()).source(EnumHousedelStatus.SEAL_INTENTION.getValue()).target(EnumHousedelStatus.SIGN_INTENTION.getValue());
         }
 
         @Override
@@ -90,33 +86,16 @@ public class StateMachineConfig {
     @Configuration
     static class PersistHandlerConfig {
 
-        @Autowired
-        private HousedelService housedelService;
-
         @Bean
         public PersistStateMachineHandler persistStateMachineHandler(StateMachine<String, String> stateMachine) {
             return new PersistStateMachineHandler(stateMachine);
         }
 
         @Bean
-        public PersistStateChangeListener persistStateChangeListener() {
-            return (state, message, transition, stateMachine) ->
-                    Optional.ofNullable(message)
-                            .map(Message::getHeaders)
-                            .filter(m -> m.containsKey("housedel"))
-                            .map(m -> m.get("housedel", Housedel.class))
-                            .map(Housedel::getHousedelCode)
-                            .map(id -> Housedel.builder().housedelCode(id).delStatus(0).build())
-                            .ifPresent(del -> housedelService.update(del));
+        public Persist persist(PersistStateMachineHandler handler) {
+            return new Persist(handler);
         }
 
-        @Bean
-        public Persist persist(PersistStateMachineHandler handler, PersistStateChangeListener listener) {
-            return Persist.builder()
-                    .handler(handler)
-                    .listener(listener)
-                    .build();
-        }
     }
 
 }
