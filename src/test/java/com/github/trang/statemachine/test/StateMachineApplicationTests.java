@@ -1,44 +1,45 @@
 package com.github.trang.statemachine.test;
 
+import com.github.trang.statemachine.StateMachineApplication.Event;
 import com.github.trang.statemachine.config.Persist;
-import com.github.trang.statemachine.model.enums.Events;
-import com.github.trang.statemachine.service.HousedelService;
-import com.google.gson.Gson;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import static com.github.trang.statemachine.StateMachineApplication.Event.DELIVER;
+import static com.github.trang.statemachine.StateMachineApplication.Event.PROCESS;
+import static com.github.trang.statemachine.StateMachineApplication.Event.SEND;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class StateMachineApplicationTests {
 
     @Autowired
-    private HousedelService housedelService;
-    @Autowired
-    private StateMachine<String, String> stateMachine;
-    @Autowired
     private Persist persist;
-    @Autowired
-    private Gson gson;
 
     @Test
-    public void base() {
-        System.out.println(gson.toJson(housedelService.selectByPk(101100000001L)));
+    public void test() {
+        System.out.println("INIT：" + persist.listDbEntries());
+        persist.change(1, SEND);
+        persist.change(1, DELIVER);
+        System.out.println("ERROR：" + persist.listDbEntries());
+        persist.change(1, PROCESS);
+        System.out.println("PROCESS：" + persist.listDbEntries());
+        persist.change(1, SEND);
+        System.out.println("SEND：" + persist.listDbEntries());
+        persist.change(1, DELIVER);
+        System.out.println("DELIVER：" + persist.listDbEntries());
     }
 
     @Test
-    public void update() {
-        System.out.println(gson.toJson(persist.get(1L)));
-        Message<String> message = MessageBuilder.withPayload(Events.E0.name())
-                .setHeader("housedelCode", 1L)
-                .build();
-        persist.change(1L, Events.E0.name());
-        System.out.println(gson.toJson(persist.get(1L)));
+    public void test2() {
+        System.out.println("INIT：" + persist.listDbEntries());
+        persist.change(1, PROCESS);
+        System.out.println("PROCESS：" + persist.listDbEntries());
+        persist.change(1, Event.TEST);
+        System.out.println("TEST：" + persist.listDbEntries());
     }
 
 }

@@ -1,36 +1,100 @@
 package com.github.trang.statemachine;
 
 import com.github.trang.statemachine.config.Persist;
-import com.github.trang.statemachine.model.enums.Events;
-import com.github.trang.statemachine.service.HousedelService;
-import com.google.gson.Gson;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.statemachine.config.EnableStateMachine;
+import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
+import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
+import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
+import org.springframework.statemachine.recipes.persist.PersistStateMachineHandler;
+
+import java.io.IOException;
+
+import static com.github.trang.statemachine.StateMachineApplication.Event.*;
+import static com.github.trang.statemachine.StateMachineApplication.STATE.*;
 
 @SpringBootApplication
-public class StateMachineApplication implements CommandLineRunner {
+public class StateMachineApplication {
 
-    @Autowired
-    private HousedelService housedelService;
-    @Autowired
-    private StateMachine<String, String> stateMachine;
-    @Autowired
-    private Persist persist;
-    @Autowired
-    private Gson gson;
+    @Configuration
+    @EnableStateMachine
+    static class StateMachineConfig
+            extends StateMachineConfigurerAdapter<String, String> {
 
-    public static void main(String[] args) {
-        SpringApplication.run(StateMachineApplication.class, args);
+        @Override
+        public void configure(StateMachineStateConfigurer<String, String> states)
+                throws Exception {
+            states.withStates()
+                    .initial(PLACED)
+                    .state(PROCESSING)
+                    .state(SENT)
+                    .state(DELIVERED);
+        }
+
+        @Override
+        public void configure(StateMachineTransitionConfigurer<String, String> transitions)
+                throws Exception {
+            transitions
+                    .withExternal().event(PROCESS).source(PLACED).target(PROCESSING)
+                    .and()
+                    .withExternal().event(SEND).source(PROCESSING).target(SENT)
+                    .and()
+                    .withExternal().event(DELIVER).source(SENT).target(DELIVERED)
+                    .and()
+                    .withExternal().event(TEST).source(PLACED).target(SENT)
+            ;
+        }
+
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        System.out.println(gson.toJson(persist.get(1L)));
-        persist.change(1L, Events.E1_8.name());
-        System.out.println(gson.toJson(persist.get(1L)));
+    @Configuration
+    static class PersistHandlerConfig {
+
+        @Autowired
+        private StateMachine<String, String> stateMachine;
+
+        @Bean
+        public Persist persist() {
+            return new Persist(persistStateMachineHandler());
+        }
+
+        @Bean
+        public PersistStateMachineHandler persistStateMachineHandler() {
+            return new PersistStateMachineHandler(stateMachine);
+        }
+
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class Order {
+        private int id;
+        private String state;
+    }
+
+    public static class Event {
+        public static final String PROCESS = "PROCESS";
+        public static final String SEND = "SEND";
+        public static final String DELIVER = "DELIVER";
+        public static final String TEST = "TEST";
+    }
+
+    public static class STATE {
+        public static final String PLACED = "PLACED";
+        public static final String PROCESSING = "PROCESSING";
+        public static final String SENT = "SENT";
+        public static final String DELIVERED = "DELIVERED";
+    }
+
+    public static void main(String[] args) throws IOException {
+        SpringApplication.run(StateMachineApplication.class, args);
     }
 
 }
