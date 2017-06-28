@@ -22,8 +22,8 @@ public class StateMachineApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         stateMachine.sendEvent(Events.E0_1);
         stateMachine.sendEvent(Events.E0_1);
-//        stateMachine.sendEvent(Events.E1_2);
-//        stateMachine.sendEvent(Events.E1_3);
+        stateMachine.sendEvent(Events.E1_2);
+        stateMachine.sendEvent(Events.E1_3);
 //        stateMachine.sendEvent(Events.E2_3);
     }
 
