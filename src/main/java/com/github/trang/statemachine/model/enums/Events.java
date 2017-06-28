@@ -1,16 +1,14 @@
 package com.github.trang.statemachine.model.enums;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
  * @author trang
  */
-@AllArgsConstructor
-@Getter
-public enum Events {
-    E1_8,
-    E8_9,
-    E9_10,
-    E0
+public class Events {
+
+    public static final String INTENTION = "INTENTION";
+    public static final String PAY = "PAY";
+    public static final String CONTRACT = "CONTRACT";
+    public static final String TRANSFER = "TRANSFER";
+    public static final String INVALID = "INVALID";
+
 }

@@ -8,8 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -27,18 +25,23 @@ public class StateMachineApplicationTests {
     private Gson gson;
 
     @Test
-    public void base() {
-        System.out.println(gson.toJson(housedelService.selectByPk(101100000001L)));
+    public void test() {
+        System.out.println("INIT：" + persist.get(1L));
+        persist.change(1L, Events.TRANSFER);
+        System.out.println("ERROR：" + persist.get(1L));
+        persist.change(1L, Events.INTENTION);
+        System.out.println("INTENTION：" + persist.get(1L));
+        persist.change(1L, Events.PAY);
+        System.out.println("PAY：" + persist.get(1L));
+        persist.change(1L, Events.CONTRACT);
+        System.out.println("CONTRACT：" + persist.get(1L));
     }
 
     @Test
-    public void update() {
-        System.out.println(gson.toJson(persist.get(1L)));
-        Message<String> message = MessageBuilder.withPayload(Events.E0.name())
-                .setHeader("housedelCode", 1L)
-                .build();
-        persist.change(1L, Events.E0.name());
-        System.out.println(gson.toJson(persist.get(1L)));
+    public void test2() {
+        System.out.println("INIT：" + persist.get(1L));
+        persist.change(1L, Events.TRANSFER);
+        System.out.println("TRANSFER：" + persist.get(1L));
     }
 
 }

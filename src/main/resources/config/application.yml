@@ -4,10 +4,10 @@ server:
 logging:
   level:
     root: info
-    org.mybatis: debug
+    org.mybatis: info
     org.springframework: warn
-    org.springframework.jdbc: debug
-    com.github.trang: debug
+    org.springframework.jdbc: info
+    com.github.trang: info
 
 debug: false
 

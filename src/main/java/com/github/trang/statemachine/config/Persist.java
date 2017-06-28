@@ -1,8 +1,10 @@
 package com.github.trang.statemachine.config;
 
 import com.github.trang.statemachine.model.domain.Housedel;
+import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
 import com.github.trang.statemachine.service.HousedelService;
 import lombok.Getter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
@@ -15,7 +17,7 @@ import java.util.Optional;
  * @author trang
  */
 @Getter
-public class Persist {
+public class Persist implements InitializingBean {
 
     @Autowired
     private HousedelService housedelService;
@@ -27,7 +29,7 @@ public class Persist {
                     .filter(m -> m.containsKey("housedel"))
                     .map(m -> m.get("housedel", Housedel.class))
                     .map(Housedel::getHousedelCode)
-                    .map(id -> Housedel.builder().housedelCode(id).delStatus(0).build())
+                    .map(id -> Housedel.builder().housedelCode(id).delStatus(EnumHousedelStatus.getStatus(state.getId())).build())
                     .ifPresent(del -> housedelService.update(del));
 
     public Persist(PersistStateMachineHandler handler) {
@@ -42,7 +44,11 @@ public class Persist {
     public void change(long housedelCode, String event) {
         Housedel del = housedelService.selectByPk(housedelCode);
         Message<String> message = MessageBuilder.withPayload(event).setHeader("housedel", del).build();
-        handler.handleEventWithState(message, del.getDelStatus().toString());
+        handler.handleEventWithState(message, EnumHousedelStatus.getState(del.getDelStatus()));
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+    }
 }

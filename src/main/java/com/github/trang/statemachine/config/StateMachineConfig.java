@@ -30,23 +30,23 @@ public class StateMachineConfig {
 
     @Configuration
     @EnableStateMachine
-    static class Config extends StateMachineConfigurerAdapter<String, String> {
+    static class PersistStateMachineConfig extends StateMachineConfigurerAdapter<String, String> {
 
         @Autowired
-        StateMachineListener<String, String> stateMachineListener;
+        private StateMachineListener<String, String> stateMachineListener;
 
         /**
          * 初始化状态机
          */
         @Override
         public void configure(StateMachineStateConfigurer<String, String> config) throws Exception {
-            config
-                    .withStates()
-                    .initial(EnumHousedelStatus.VALID.getValue())
-                    .states(EnumSet.allOf(EnumHousedelStatus.class)
-                            .stream()
-                            .map(EnumHousedelStatus::name)
-                            .collect(Collectors.toSet()));
+            config.withStates()
+                    .initial(EnumHousedelStatus.VALID.getState())
+                    .states(
+                            EnumSet.allOf(EnumHousedelStatus.class).stream()
+                                    .map(EnumHousedelStatus::getState)
+                                    .collect(Collectors.toSet())
+                    );
         }
 
         /**
@@ -55,11 +55,26 @@ public class StateMachineConfig {
         @Override
         public void configure(StateMachineTransitionConfigurer<String, String> transitions) throws Exception {
             transitions
-                    .withExternal().event(Events.E1_8.name()).source(EnumHousedelStatus.VALID.getValue()).target(EnumHousedelStatus.DRAFT_INTENTION.getValue())
+                    .withExternal()
+                    .event(Events.INTENTION)
+                    .source(EnumHousedelStatus.VALID.getState())
+                    .target(EnumHousedelStatus.DRAFT_INTENTION.getState())
                     .and()
-                    .withExternal().event(Events.E8_9.name()).source(EnumHousedelStatus.DRAFT_INTENTION.getValue()).target(EnumHousedelStatus.SEAL_INTENTION.getValue())
+                    .withExternal()
+                    .event(Events.PAY)
+                    .source(EnumHousedelStatus.DRAFT_INTENTION.getState())
+                    .target(EnumHousedelStatus.DRAFT_EARNEST.getState())
                     .and()
-                    .withExternal().event(Events.E9_10.name()).source(EnumHousedelStatus.SEAL_INTENTION.getValue()).target(EnumHousedelStatus.SIGN_INTENTION.getValue());
+                    .withExternal()
+                    .event(Events.CONTRACT)
+                    .source(EnumHousedelStatus.DRAFT_EARNEST.getState())
+                    .target(EnumHousedelStatus.DRAFT.getState())
+                    .and()
+                    .withExternal()
+                    .event(Events.TRANSFER)
+                    .source(EnumHousedelStatus.DRAFT.getState())
+                    .target(EnumHousedelStatus.TRANSFER.getState())
+            ;
         }
 
         @Override
