@@ -1,6 +1,5 @@
 package com.github.trang.statemachine.test;
 
-import com.github.trang.statemachine.StateMachineApplication.Event;
 import com.github.trang.statemachine.config.Persist;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static com.github.trang.statemachine.StateMachineApplication.Event.DELIVER;
-import static com.github.trang.statemachine.StateMachineApplication.Event.PROCESS;
-import static com.github.trang.statemachine.StateMachineApplication.Event.SEND;
+import static com.github.trang.statemachine.annotation.StateMachineConfig.Event.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -38,7 +35,7 @@ public class StateMachineApplicationTests {
         System.out.println("INIT：" + persist.listDbEntries());
         persist.change(1, PROCESS);
         System.out.println("PROCESS：" + persist.listDbEntries());
-        persist.change(1, Event.TEST);
+        persist.change(1, TEST);
         System.out.println("TEST：" + persist.listDbEntries());
     }
 

@@ -1,6 +1,7 @@
 package com.github.trang.statemachine.config;
 
-import com.github.trang.statemachine.StateMachineApplication.Order;
+import com.github.trang.statemachine.annotation.StateMachineConfig.Order;
+import com.github.trang.statemachine.annotation.StateMachineConfig.State;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import lombok.Getter;
@@ -13,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.trang.statemachine.annotation.StateMachineConfig.State.*;
+
 /**
  * @author trang
  */
@@ -24,7 +27,7 @@ public class Persist {
     private final PersistStateChangeListener listener = (state, message, transition, stateMachine) -> {
         if (message != null && message.getHeaders().containsKey("order")) {
             Integer id = message.getHeaders().get("order", Integer.class);
-            Persist.MAP.get(id).setState(state.getId());
+            Persist.MAP.get(id).setState(State.getStatus(state.getId()));
         }
     };
 
@@ -34,10 +37,10 @@ public class Persist {
     }
 
     public static final List<Order> ORDERS = Arrays.asList(
-            new Order(1, "PLACED"),
-            new Order(2, "PROCESSING"),
-            new Order(3, "SENT"),
-            new Order(4, "DELIVERED")
+            new Order(1, PLACED.getStatus()),//"PLACED"
+            new Order(2, PROCESSING.getStatus()),//"PROCESSING"
+            new Order(3, SENT.getStatus()),//"SENT"
+            new Order(4, DELIVERED.getStatus())//"DELIVERED"
     );
 
     public static final Map<Integer, Order> MAP = Maps.uniqueIndex(ORDERS, Order::getId);
@@ -46,10 +49,10 @@ public class Persist {
         return new Gson().toJson(ORDERS);
     }
 
-    public void change(int order, String event) {
-        Order o = MAP.get(order);
-        Message<String> message = MessageBuilder.withPayload(event).setHeader("order", order).build();
-        handler.handleEventWithState(message, o.getState());
+    public void change(int id, String event) {
+        Order order = MAP.get(id);
+        Message<String> message = MessageBuilder.withPayload(event).setHeader("order", id).build();
+        handler.handleEventWithState(message, State.getState(order.getState()));
     }
 
 }
