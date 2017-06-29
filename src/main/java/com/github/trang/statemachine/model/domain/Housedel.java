@@ -1,10 +1,7 @@
 package com.github.trang.statemachine.model.domain;
 
 import com.google.common.base.MoreObjects;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;

@@ -41,12 +41,6 @@ public enum EnumHousedelStatus {
             STATUS_MAP.put(e.getStatus(), e.getState());
         });
     }
-    static {
-        Arrays.stream(values()).forEach(e -> {
-            STATE_MAP.put(e.getState(), e.getStatus());
-            STATUS_MAP.put(e.getStatus(), e.getState());
-        });
-    }
 
     public static Integer getStatus(String state) {
         return STATE_MAP.get(state);

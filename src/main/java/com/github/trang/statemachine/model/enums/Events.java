@@ -5,6 +5,7 @@ package com.github.trang.statemachine.model.enums;
  */
 public class Events {
 
+    public static final String ADD = "ADD";
     public static final String INTENTION = "INTENTION";
     public static final String PAY = "PAY";
     public static final String CONTRACT = "CONTRACT";

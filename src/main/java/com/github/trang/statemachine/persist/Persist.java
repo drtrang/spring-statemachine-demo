@@ -1,9 +1,8 @@
-package com.github.trang.statemachine.config;
+package com.github.trang.statemachine.persist;
 
 import com.github.trang.statemachine.model.domain.Housedel;
 import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
 import com.github.trang.statemachine.service.HousedelService;
-import lombok.Getter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -16,39 +15,46 @@ import java.util.Optional;
 /**
  * @author trang
  */
-@Getter
 public class Persist implements InitializingBean {
 
     @Autowired
     private HousedelService housedelService;
 
     private final PersistStateMachineHandler handler;
-    private final PersistStateChangeListener listener = (state, message, transition, stateMachine) ->
-            Optional.ofNullable(message)
-                    .map(Message::getHeaders)
-                    .filter(m -> m.containsKey("housedel"))
-                    .map(m -> m.get("housedel", Housedel.class))
-                    .map(Housedel::getHousedelCode)
-                    .map(id -> Housedel.builder().housedelCode(id).delStatus(EnumHousedelStatus.getStatus(state.getId())).build())
-                    .ifPresent(del -> housedelService.update(del));
+    private final PersistStateChangeListener listener;
 
     public Persist(PersistStateMachineHandler handler) {
         this.handler = handler;
-        this.handler.addPersistStateChangeListener(listener);
-    }
-
-    public Housedel get(Long pk) {
-        return housedelService.selectByPk(pk);
+        this.listener = persistStateChangeListener();
     }
 
     public void change(long housedelCode, String event) {
         Housedel del = housedelService.selectByPk(housedelCode);
-        Message<String> message = MessageBuilder.withPayload(event).setHeader("housedel", del).build();
+        Message<String> message = MessageBuilder.withPayload(event)
+                .setHeader("housedelCode", housedelCode)
+                .build();
         handler.handleEventWithState(message, EnumHousedelStatus.getState(del.getDelStatus()));
+    }
+
+    private PersistStateChangeListener persistStateChangeListener() {
+        return (state, message, transition, stateMachine) ->
+                Optional.ofNullable(message)
+                        .map(Message::getHeaders)
+                        .filter(m -> m.containsKey("housedelCode"))
+                        .map(m -> m.get("housedelCode", Long.class))
+                        .map(id -> Housedel.builder()
+                                .housedelCode(id)
+                                .delStatus(EnumHousedelStatus.getStatus(state.getId()))
+                                .build())
+                        .ifPresent(del -> housedelService.update(del));
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-
+        if (this.handler == null) {
+            throw new IllegalStateException("handler can't be null!");
+        }
+        this.handler.addPersistStateChangeListener(listener);
     }
+
 }

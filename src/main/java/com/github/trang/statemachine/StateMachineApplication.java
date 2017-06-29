@@ -1,6 +1,6 @@
 package com.github.trang.statemachine;
 
-import com.github.trang.statemachine.config.Persist;
+import com.github.trang.statemachine.persist.Persist;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
