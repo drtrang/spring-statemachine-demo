@@ -20,7 +20,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://172.30.11.240:3306/house_huabei?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://10.33.106.239:3306/dev?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root
     password: 123456
   transaction:

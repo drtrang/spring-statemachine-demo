@@ -19,10 +19,10 @@ public class EventHandler {
 
     @OnTransition(source = States.VALID, target = States.DRAFT_INTENTION)
     public void change(@EventHeaders Map<String, Object> headers,
-                    ExtendedState extendedState,
-                    StateMachine<String, String> stateMachine,
-                    Message<Events> message,
-                    Exception e) {
+                       ExtendedState extendedState,
+                       StateMachine<String, String> stateMachine,
+                       Message<Events> message,
+                       Exception e) {
         System.out.println("测试 @OnTransition");
     }
 

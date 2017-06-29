@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.trang.statemachine.mapper.HouseMapper">
+  <resultMap id="BaseResultMap" type="com.github.trang.statemachine.model.domain.House">
+    <!-- WARNING - @mbg.generated -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  
+  <sql id="BaseColumns">
+    <!-- WARNING - @mbg.generated -->
+    id, status, remark, create_time, update_time
+  </sql>
+  
+</mapper>

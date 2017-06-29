@@ -62,28 +62,30 @@
         <property name="beginningDelimiter" value="`"/>
         <property name="endingDelimiter" value="`"/>
 
-        <!-- 生成 domain 文件的序列化属性 -->
+        <!-- 生成实体类中的序列化属性 -->
         <plugin type="com.github.trang.mybatis.generator.plugins.SerializablePlugin">
             <property name="suppressJavaInterface" value="false"/>
         </plugin>
-        <!-- 用于扩展或修改通过 MBG 代码生成器生成的代码，插件将按在配置中配置的顺序执行。 -->
+        <!-- 通用 Mapper 插件 -->
         <plugin type="com.github.trang.mybatis.generator.plugins.MapperPlugin">
             <property name="mappers" value="${base.mapper}"/>
             <property name="lombok" value="${lombok}"/>
             <property name="accessors" value="${lombok.accessors}"/>
         </plugin>
-        <!-- 生成 Domain 文件的 toString() 方法 -->
+        <!-- 生成实体类中的 toString() 方法 -->
         <plugin type="com.github.trang.mybatis.generator.plugins.GuavaToStringPlugin"/>
         <!-- 生成 Mapper.xml 文件的 BaseColumns -->
         <plugin type="com.github.trang.mybatis.generator.plugins.MapperSqlMapConfigPlugin"/>
+        <!-- 生成 Service 类 -->
         <plugin type="com.github.trang.mybatis.generator.plugins.ServicePlugin">
-            <property name="baseService" value="com.github.trang.statemachine.service.BaseService"/>
-            <property name="targetProject" value="src/main/java"/>
-            <property name="targetPackage" value="com.github.trang.statemachine.service"/>
+            <property name="baseService" value="${base.service}"/>
+            <property name="baseServiceImpl" value="${base.service.impl}"/>
+            <property name="targetProject" value="${target.project.service}"/>
+            <property name="targetPackage" value="${target.package.service}"/>
         </plugin>
 
         <!-- 读取数据库表的注释，生成 Model 的注释 -->
-        <commentGenerator type="com.github.trang.mybatis.generator.plugins.MapperCommentGenerator"/>
+        <commentGenerator type="com.github.trang.mybatis.generator.plugins.CommentGenerator"/>
 
         <!-- 连接数据库配置 -->
         <jdbcConnection driverClass="${jdbc.driverClass}" connectionURL="${jdbc.url}"
@@ -187,7 +189,7 @@
 
             注意，table里面很多参数都是对javaModelGenerator，context等元素的默认属性的一个复写；
          -->
-        <table tableName="sh_housedel_comment" domainObjectName="HousedelComment">
+        <table tableName="state_machine" domainObjectName="House">
             <!--
                generatedKey用于生成生成主键的方法，
                如果设置了该元素，MBG会在生成的<insert>元素中生成一条正确的<selectKey>元素，该元素可选
@@ -207,4 +209,5 @@
             <generatedKey column="id" sqlStatement="JDBC"/>
         </table>
     </context>
+
 </generatorConfiguration>

@@ -1,8 +1,8 @@
 package com.github.trang.statemachine.persist;
 
-import com.github.trang.statemachine.model.domain.Housedel;
+import com.github.trang.statemachine.model.domain.House;
 import com.github.trang.statemachine.model.enums.States;
-import com.github.trang.statemachine.service.HousedelService;
+import com.github.trang.statemachine.service.HouseService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public class Persist implements InitializingBean {
 
     @Autowired
-    private HousedelService housedelService;
+    private HouseService houseService;
 
     private final PersistStateMachineHandler handler;
     private final PersistStateChangeListener listener;
@@ -29,11 +29,11 @@ public class Persist implements InitializingBean {
     }
 
     public void change(long housedelCode, String event) {
-        Housedel del = housedelService.selectByPk(housedelCode);
+        House house = houseService.selectByPk(housedelCode);
         Message<String> message = MessageBuilder.withPayload(event)
                 .setHeader("housedelCode", housedelCode)
                 .build();
-        handler.handleEventWithState(message, States.findState(del.delStatus()));
+        handler.handleEventWithState(message, States.findState(house.status()));
     }
 
     private PersistStateChangeListener persistStateChangeListener() {
@@ -42,8 +42,8 @@ public class Persist implements InitializingBean {
                         .map(Message::getHeaders)
                         .filter(m -> m.containsKey("housedelCode"))
                         .map(m -> m.get("housedelCode", Long.class))
-                        .map(id -> new Housedel().housedelCode(id).delStatus(States.findStatus(state.getId())))
-                        .ifPresent(del -> housedelService.update(del));
+                        .map(id -> new House().id(id).status(States.findStatus(state.getId())))
+                        .ifPresent(del -> houseService.update(del));
     }
 
     @Override

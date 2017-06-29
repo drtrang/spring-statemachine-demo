@@ -52,6 +52,7 @@ public class States {
     private static final Set<String> STATE_SET = new HashSet<>();
     private static final Map<String, Integer> STATE_MAP = new HashMap<>();
     private static final Map<Integer, String> STATUS_MAP = new HashMap<>();
+
     static {
         Arrays.stream(EnumHousedelStatus.values()).forEach(e -> {
             STATE_SET.add(e.state());
@@ -63,9 +64,11 @@ public class States {
     public static Set<String> all() {
         return STATE_SET;
     }
+
     public static Integer findStatus(String state) {
         return STATE_MAP.get(state);
     }
+
     public static String findState(Integer status) {
         return STATUS_MAP.get(status);
     }

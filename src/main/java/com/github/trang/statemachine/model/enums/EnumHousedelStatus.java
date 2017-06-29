@@ -31,12 +31,9 @@ public enum EnumHousedelStatus {
     TRANSFER(7, "TRANSFER", "过户"),
     INVALID(0, "INVALID", "无效");
 
-    private int status;
-    private String state;
-    private String desc;
-
     private static final Map<String, Integer> STATE_MAP = new HashMap<>();
     private static final Map<Integer, String> STATUS_MAP = new HashMap<>();
+
     static {
         Arrays.stream(values()).forEach(e -> {
             STATE_MAP.put(e.state(), e.status());
@@ -44,9 +41,14 @@ public enum EnumHousedelStatus {
         });
     }
 
+    private int status;
+    private String state;
+    private String desc;
+
     public static Integer findStatus(String state) {
         return STATE_MAP.get(state);
     }
+
     public static String findState(Integer status) {
         return STATUS_MAP.get(status);
     }
