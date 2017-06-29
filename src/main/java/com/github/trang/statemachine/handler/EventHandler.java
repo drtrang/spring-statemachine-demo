@@ -1,12 +1,12 @@
 package com.github.trang.statemachine.handler;
 
-import com.github.trang.statemachine.annotation.StatesOnTransition;
-import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
 import com.github.trang.statemachine.model.enums.Events;
+import com.github.trang.statemachine.model.enums.States;
 import org.springframework.messaging.Message;
 import org.springframework.statemachine.ExtendedState;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.annotation.EventHeaders;
+import org.springframework.statemachine.annotation.OnTransition;
 import org.springframework.statemachine.annotation.WithStateMachine;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.Map;
 @WithStateMachine
 public class EventHandler {
 
-    @StatesOnTransition(source = EnumHousedelStatus.VALID, target = EnumHousedelStatus.DRAFT_INTENTION)
+    @OnTransition(source = States.VALID, target = States.DRAFT_INTENTION)
     public void change(@EventHeaders Map<String, Object> headers,
                     ExtendedState extendedState,
                     StateMachine<String, String> stateMachine,

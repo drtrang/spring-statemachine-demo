@@ -31,7 +31,7 @@ public class StateMachineConfig {
     static class PersistStateMachineConfig extends StateMachineConfigurerAdapter<String, String> {
 
         /**
-         * 定义可处理的状态
+         * 配置暴露的状态
          */
         @Override
         public void configure(StateMachineStateConfigurer<String, String> states) throws Exception {
@@ -45,7 +45,7 @@ public class StateMachineConfig {
         }
 
         /**
-         * 定义状态流转
+         * 配置不同类型的状态流转
          */
         @Override
         public void configure(StateMachineTransitionConfigurer<String, String> transitions) throws Exception {
@@ -59,6 +59,9 @@ public class StateMachineConfig {
                     .withExternal().event(Events.TRANSFER).source(States.DRAFT).target(States.TRANSFER);
         }
 
+        /**
+         * 配置状态机通用配置
+         */
         @Override
         public void configure(StateMachineConfigurationConfigurer<String, String> config) throws Exception {
             config.withConfiguration()

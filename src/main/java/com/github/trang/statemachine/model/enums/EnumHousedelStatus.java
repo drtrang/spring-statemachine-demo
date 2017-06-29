@@ -2,6 +2,7 @@ package com.github.trang.statemachine.model.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Getter
+@Accessors(fluent = true)
 public enum EnumHousedelStatus {
 
     VALID(1, "VALID", "有效"),
@@ -37,15 +39,15 @@ public enum EnumHousedelStatus {
     private static final Map<Integer, String> STATUS_MAP = new HashMap<>();
     static {
         Arrays.stream(values()).forEach(e -> {
-            STATE_MAP.put(e.getState(), e.getStatus());
-            STATUS_MAP.put(e.getStatus(), e.getState());
+            STATE_MAP.put(e.state(), e.status());
+            STATUS_MAP.put(e.status(), e.state());
         });
     }
 
-    public static Integer getStatus(String state) {
+    public static Integer findStatus(String state) {
         return STATE_MAP.get(state);
     }
-    public static String getState(Integer status) {
+    public static String findState(Integer status) {
         return STATUS_MAP.get(status);
     }
 

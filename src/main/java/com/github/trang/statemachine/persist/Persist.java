@@ -1,7 +1,7 @@
 package com.github.trang.statemachine.persist;
 
 import com.github.trang.statemachine.model.domain.Housedel;
-import com.github.trang.statemachine.model.enums.EnumHousedelStatus;
+import com.github.trang.statemachine.model.enums.States;
 import com.github.trang.statemachine.service.HousedelService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class Persist implements InitializingBean {
         Message<String> message = MessageBuilder.withPayload(event)
                 .setHeader("housedelCode", housedelCode)
                 .build();
-        handler.handleEventWithState(message, EnumHousedelStatus.getState(del.getDelStatus()));
+        handler.handleEventWithState(message, States.findState(del.delStatus()));
     }
 
     private PersistStateChangeListener persistStateChangeListener() {
@@ -42,10 +42,7 @@ public class Persist implements InitializingBean {
                         .map(Message::getHeaders)
                         .filter(m -> m.containsKey("housedelCode"))
                         .map(m -> m.get("housedelCode", Long.class))
-                        .map(id -> Housedel.builder()
-                                .housedelCode(id)
-                                .delStatus(EnumHousedelStatus.getStatus(state.getId()))
-                                .build())
+                        .map(id -> new Housedel().housedelCode(id).delStatus(States.findStatus(state.getId())))
                         .ifPresent(del -> housedelService.update(del));
     }
 
