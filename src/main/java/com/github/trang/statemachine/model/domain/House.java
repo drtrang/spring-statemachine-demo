@@ -1,11 +1,17 @@
 package com.github.trang.statemachine.model.domain;
 
 import com.google.common.base.MoreObjects;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
-import lombok.*;
-import lombok.experimental.Accessors;
 
 @NoArgsConstructor
 @Accessors(fluent = true)
